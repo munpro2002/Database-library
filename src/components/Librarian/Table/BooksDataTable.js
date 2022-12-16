@@ -25,6 +25,7 @@ const BooksDataTable = (props) => {
       </td>
       <td className="p-3 whitespace-nowrap text-center">{singleRowData[6]}</td>
       <td className="p-3 whitespace-nowrap text-center">{singleRowData[7]}</td>
+      <td className="p-3 whitespace-nowrap text-center">{singleRowData[9]}</td>
     </Fragment>
   );
 };

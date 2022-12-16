@@ -12,6 +12,8 @@ import {
   getAllReturnBills,
 } from "./store/loanBill";
 import { getAllFines } from "./store/fines";
+import { getFinePayments, getBorrowPayments } from "./store/payments";
+import { getAllNotifs } from "./store/notifications";
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +25,9 @@ function App() {
     dispatch(getAllLoanLibrary());
     dispatch(getAllReturnBills());
     dispatch(getAllFines());
+    dispatch(getFinePayments());
+    dispatch(getBorrowPayments());
+    dispatch(getAllNotifs());
   }, [dispatch]);
 
   return (

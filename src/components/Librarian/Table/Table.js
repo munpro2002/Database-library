@@ -4,6 +4,8 @@ import CustomersDataTable from "./CustomersDataTable";
 import BooksDataTable from "./BooksDataTable";
 import HomeLoanDataTable from "./HomeLoanDataTable";
 import LibraryLoanDataTable from "./LibraryLoanDataTable";
+import FinePaymentsTable from "./FinePaymentsTable";
+import BorrowPaymentsTable from "./BorrowPaymentsTable";
 import ReturnDataTable from "./ReturnDataTable";
 
 const Table = (props) => {
@@ -43,6 +45,12 @@ const Table = (props) => {
               )}
               {title === "Return Records" && (
                 <ReturnDataTable singleRowData={singleRowData} />
+              )}
+              {title === "Fine" && (
+                <FinePaymentsTable singleRowData={singleRowData} />
+              )}
+              {title === "Borrow" && (
+                <BorrowPaymentsTable singleRowData={singleRowData} />
               )}
             </tr>
           ))}

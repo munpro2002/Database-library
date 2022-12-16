@@ -1,34 +1,15 @@
 import React, { Fragment, useState } from "react";
-import Modal from "../UI/Modal";
 import { useSelector } from "react-redux";
-import Table from "./Table/Table";
+import Modal from "../UI/Modal";
 
-const returnDir = [
-  "ReturnID",
-  "LoanID",
-  "CustomerID",
-  "StaffID",
-  "Return date",
-  "Days late",
-];
-
-const CreateReturnBill = () => {
+const CreateNotifications = () => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [loanBillOptionValue, setLoanBillOptionValue] = useState(null);
+  const [bookOptionValue, setBookOptionValue] = useState(null);
   const [customerOptionValue, setCustomersOptionValue] = useState(null);
-  const [staffOptionValue, setStaffOptionValue] = useState(null);
 
   const customers = useSelector((state) => state.customers.allCustomers);
-  const staffs = useSelector((state) => state.staffs.allStaffs);
-  const homeLoanBills = useSelector((state) => state.loanbills.allLoanHome);
-  const libraryLoanBills = useSelector(
-    (state) => state.loanbills.allLoanLibrary
-  );
-  const allLoanBills = [...homeLoanBills, ...libraryLoanBills];
-  // console.log(allLoanBills);
-
-  const returnBills = useSelector((state) => state.loanbills.allReturnBills);
-  console.log(returnBills);
+  const books = useSelector((state) => state.books.allBooks);
+  const notifs = useSelector((state) => state.notifs.allNotifs);
 
   const openModalHandler = () => {
     setIsOpenModal(true);
@@ -37,22 +18,23 @@ const CreateReturnBill = () => {
   const closeModalHandler = () => {
     setIsOpenModal(false);
 
+    setBookOptionValue(null);
     setCustomersOptionValue(null);
-    setStaffOptionValue(null);
-    setLoanBillOptionValue(null);
   };
 
   const submitFormHandler = (e) => {
     e.preventDefault();
-    if (!loanBillOptionValue || !staffOptionValue || !customerOptionValue) {
+    if (!bookOptionValue || !customerOptionValue) {
       alert("please choose a valid option!!");
       return;
     }
+
     const loanInfo = {
-      loanbillID: loanBillOptionValue,
-      staffID: staffOptionValue,
-      customerID: customerOptionValue,
+      ISBN: Number(bookOptionValue),
+      customerID: Number(customerOptionValue),
     };
+
+    console.log(loanInfo);
 
     const requestOptions = {
       method: "POST",
@@ -60,7 +42,7 @@ const CreateReturnBill = () => {
       body: JSON.stringify(loanInfo),
     };
 
-    fetch("http://127.0.0.1:5000/api/v1/bills/return", requestOptions)
+    fetch("http://127.0.0.1:5000/api/v1/notis", requestOptions)
       .then((response) => response.json())
       .then((data) => console.log(data));
 
@@ -71,24 +53,66 @@ const CreateReturnBill = () => {
     <Fragment>
       <div>
         <h1 className="text-center font-semibold text-[2rem]">
-          Return Management
+          Book notifications
         </h1>
         <p className="text-[0.8rem] text-slate-500 text-center">
-          Is there someone want to return a book?{" "}
+          Is there someone want to schedule for a book?{" "}
           <span
             className="text-black font-bold hover:underline cursor-pointer"
             onClick={openModalHandler}
           >
-            Create return bill
+            Create notifications
           </span>
         </p>
       </div>
-      {<Table dir={returnDir} data={returnBills} title="Return Records" />}
+      <div className="grid grid-cols-2 max-w-[760px] mx-auto gap-4">
+        <div>
+          {notifs.map(
+            (noti, index) =>
+              noti.status === true && (
+                <div
+                  className="p-5 flex justify-between items-center shadow mt-4 border-l-[4px] border-green-500"
+                  key={index}
+                >
+                  <span className="font-bold text-blue-400">
+                    #{noti.noti_id}
+                  </span>
+                  <span className="font-bold text-blue-400">
+                    #{noti.customer_id}
+                  </span>
+                  <span className="font-bold text-blue-400">#{noti.isbn}</span>
+                  <span className="font-bold text-green-400">TRUE</span>
+                </div>
+              )
+          )}
+        </div>
+        <div>
+          {notifs.map(
+            (noti, index) =>
+              noti.status === false && (
+                <div
+                  className="p-5 flex justify-between items-center shadow mt-4 border-l-[4px] border-red-500"
+                  key={index}
+                >
+                  <span className="font-bold text-blue-400">
+                    #{noti.noti_id}
+                  </span>
+                  <span className="font-bold text-blue-400">
+                    #{noti.customer_id}
+                  </span>
+                  <span className="font-bold text-blue-400">#{noti.isbn}</span>
+                  <span className="font-bold text-red-400">FALSE</span>
+                </div>
+              )
+          )}
+        </div>
+      </div>
+
       {isOpenModal && (
         <Modal onCloseModal={closeModalHandler}>
           <form onSubmit={submitFormHandler}>
             <h1 className="font-semibold text-[1.5rem] text-center">
-              CREATE RETURN
+              CREATE LOAN
             </h1>
             <h2 className="font-bold text-gray-700 border-b-2 border-b-slate-400 py-2">
               BOOKS
@@ -96,18 +120,18 @@ const CreateReturnBill = () => {
             <select
               defaultValue="Select a book"
               onChange={(e) => {
-                setLoanBillOptionValue(e.currentTarget.value);
+                setBookOptionValue(e.currentTarget.value);
               }}
               className="p-2 w-full shadow rounded-md mt-2 focus:outline-blue-400"
             >
               <option disabled className="bg-slate-400 text-white">
                 Select a book
               </option>
-              {allLoanBills.map((bill, index) => (
+              {books.map((book, index) => (
                 <option
-                  value={bill["loan_bill_id"]}
+                  value={book[0]}
                   key={index}
-                >{`${bill["loan_bill_id"]} ${bill["book_id"]}--${bill["staff_id"]}--${bill["customer_id"]}--${bill["borrow_time"]}--${bill["due_time"]}`}</option>
+                >{`${book[0]}--${book[1]}--${book[2]}--${book[3]}--${book[4]}`}</option>
               ))}
             </select>
             <h2 className="font-bold text-gray-700 border-b-2 border-b-slate-400 py-2">
@@ -130,26 +154,6 @@ const CreateReturnBill = () => {
                 >{`${customer[0]}--${customer[1]} ${customer[2]}--${customer[3]}--${customer[8]}`}</option>
               ))}
             </select>
-            <h2 className="font-bold text-gray-700 border-b-2 border-b-slate-400 py-2">
-              LIBRARIANS
-            </h2>
-            <select
-              defaultValue="Select a librarian"
-              onChange={(e) => {
-                setStaffOptionValue(e.currentTarget.value);
-              }}
-              className="p-2 w-full shadow rounded-md mt-2 focus:outline-blue-400"
-            >
-              <option disabled className="bg-slate-400 text-white">
-                Select a librarian
-              </option>
-              {staffs.map((staff, index) => (
-                <option
-                  value={staff[0]}
-                  key={index}
-                >{`${staff[0]}--${staff[1]} ${staff[2]}`}</option>
-              ))}
-            </select>
             <div className="flex justify-end mt-4">
               <button
                 type="submit"
@@ -165,4 +169,4 @@ const CreateReturnBill = () => {
   );
 };
 
-export default CreateReturnBill;
+export default CreateNotifications;

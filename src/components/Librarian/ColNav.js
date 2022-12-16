@@ -6,7 +6,8 @@ import {
   faUser,
   faCircleUser,
   faNoteSticky,
-  faTriangleExclamation,
+  faDollar,
+  faBell,
 } from "@fortawesome/free-solid-svg-icons";
 
 const menus = [
@@ -29,6 +30,14 @@ const menus = [
   {
     title: "Return Bills",
     logo: faNoteSticky,
+  },
+  {
+    title: "Payments",
+    logo: faDollar,
+  },
+  {
+    title: "Notifications",
+    logo: faBell,
   },
 ];
 
